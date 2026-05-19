@@ -409,7 +409,7 @@ public:
     Portable::FEEvaluation<dim, degree_p, n_q_points_1d, 1, Number> *fe_eval,
     const int q_point) const
   {
-    fe_eval->submit_value(fe_eval->get_value(q_point), q_point);
+    fe_eval->submit_value(-fe_eval->get_value(q_point), q_point);
   }
 };
 
@@ -776,7 +776,7 @@ BlockSchurPreconditioner<AInvOperator, SInvOperator, BTOperator, VectorType>::
   {
     dst.block(1) = 0.0;
     S_inverse_operator.vmult(dst.block(1), src.block(1));
-    dst.block(1) *= -1.0;
+    // dst.block(1) *= -1.0;
   }
 
   // Apply the top right block:
@@ -1038,8 +1038,10 @@ StokesProblem<dim, degree_p, Number>::solve()
     additional_data.degree              = 3;
     additional_data.eig_cg_n_iterations = 10;
     additional_data.constraints.copy_from(constraints_p);
+    auto diagonal_inverse=mass_operator.get_matrix_diagonal_inverse();
+    // diagonal_inverse->get_vector()*=-1;
     additional_data.preconditioner =
-      mass_operator.get_matrix_diagonal_inverse();
+      diagonal_inverse;
 
     preconditioner_schur.initialize(mass_operator, additional_data);
   }
