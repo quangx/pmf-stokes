@@ -1039,7 +1039,7 @@ StokesProblem<dim, degree_p, Number>::solve()
     additional_data.eig_cg_n_iterations = 10;
     additional_data.constraints.copy_from(constraints_p);
     auto diagonal_inverse=mass_operator.get_matrix_diagonal_inverse();
-    // diagonal_inverse->get_vector()*=-1;
+    diagonal_inverse->get_vector()*=-1;
     additional_data.preconditioner =
       diagonal_inverse;
 
