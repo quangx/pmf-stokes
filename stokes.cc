@@ -1032,7 +1032,7 @@ StokesProblem<dim, degree_p, Number>::solve()
   {
     typename SPreconditionerType::AdditionalData additional_data;
     additional_data.smoothing_range     = 15.;
-    additional_data.degree              = 3;
+    additional_data.degree              = 4;
     additional_data.eig_cg_n_iterations = 10;
     additional_data.constraints.copy_from(constraints_p);
     additional_data.preconditioner =
