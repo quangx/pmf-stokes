@@ -916,6 +916,15 @@ StokesProblem<dim, degree_p, Number>::solve()
     *mf_data.get());
 
   mf_data->initialize_dof_vector(solution);
+  {
+    Kokkos::Timer t;
+    stokes_operator.vmult(solution, rhs);
+    const double time          = t.seconds();
+    const double dofs_p_second = (double)solution.size() / time;
+    pcout << "operator time: " << time << " dofs/s: " << dofs_p_second
+          << std::endl;
+    solution = 0.0;
+  }
 
   SolverControl solver_control(1000, 1e-8 * rhs.l2_norm());
 
@@ -1129,14 +1138,15 @@ StokesProblem<dim, degree_p, Number>::postprocess()
                                                         cellwise_errors_pl2,
                                                         VectorTools::L2_norm);
 
-  pcout << "velocity error: " << std::setprecision(2) << u_l2
-        << " pressure error: " << p_l2 << std::endl;
+  pcout << "velocity error: " << u_l2 << " pressure error: " << p_l2
+        << std::endl;
 }
 
 template <int dim, int degree_p, typename Number>
 void
 StokesProblem<dim, degree_p, Number>::run()
 {
+  pcout << std::setprecision(10);
   pcout << "Running on " << Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)
         << " MPI ranks and " << MultithreadInfo::n_threads() << " threads in "
 #ifdef DEBUG
